@@ -1,4 +1,3 @@
-import headerImage from "./header.png";
 import "./App.css";
 import { useEffect, useState } from "react";
 
@@ -54,7 +53,7 @@ function App() {
 return (
 <>
 <div className="app-header">
-    <img src={headerImage} alt="SkillTrack" style={{ width: "100%", maxWidth: "300px", display: "block", margin: "0 auto 20px" }} />
+    <img src="/header.png" alt="SkillTrack" />
   </div>
   
   <div className="container">

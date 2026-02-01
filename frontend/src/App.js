@@ -7,7 +7,7 @@ function App() {
   const [newGoal, setNewGoal] = useState("");
 
   const fetchGoals = () => {
-    fetch("http://127.0.0.1:5000/api/goals")
+    fetch("https://skilltrack-backend.onrender.com/goals")
       .then((res) => res.json())
       .then((data) => setGoals(data))
       .catch((err) => console.error(err));
@@ -20,7 +20,7 @@ function App() {
   const addGoal = () => {
     if (!newGoal) return alert("Title is required");
 
-    fetch("http://127.0.0.1:5000/api/goals", {
+    fetch("https://skilltrack-backend.onrender.com/goals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: newGoal }),
@@ -33,7 +33,7 @@ function App() {
   };
 
   const toggleCompleted = (id, current) => {
-    fetch(`http://127.0.0.1:5000/api/goals/${id}`, {
+    fetch(`https://skilltrack-backend.onrender.com/goals/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ completed: !current }),
@@ -43,7 +43,7 @@ function App() {
   };
 
   const deleteGoal = (id) => {
-    fetch(`http://127.0.0.1:5000/api/goals/${id}`, {
+    fetch(`https://skilltrack-backend.onrender.com/goals/${id}`, {
       method: "DELETE",
     })
       .then(() => fetchGoals())

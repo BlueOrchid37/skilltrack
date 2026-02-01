@@ -1,4 +1,4 @@
-# Node
+# React
 frontend/node_modules/
 frontend/build/
 
@@ -6,7 +6,3 @@ frontend/build/
 backend/venv/
 __pycache__/
 *.pyc
-
-# OS
-.DS_Store
-Thumbs.db

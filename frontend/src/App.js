@@ -7,7 +7,7 @@ function App() {
   const [newGoal, setNewGoal] = useState("");
 
   const fetchGoals = () => {
-    fetch("https://skilltrack-backend.onrender.com/goals")
+    fetch("https://skilltrack-backend-u9kg.onrender.com/goals")
       .then((res) => res.json())
       .then((data) => setGoals(data))
       .catch((err) => console.error(err));
@@ -20,7 +20,7 @@ function App() {
   const addGoal = () => {
     if (!newGoal) return alert("Title is required");
 
-    fetch("https://skilltrack-backend.onrender.com/goals", {
+    fetch("https://skilltrack-backend-u9kg.onrender.com/goals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: newGoal }),
@@ -33,7 +33,7 @@ function App() {
   };
 
   const toggleCompleted = (id, current) => {
-    fetch(`https://skilltrack-backend.onrender.com/goals/${id}`, {
+    fetch(`https://skilltrack-backend-u9kg.onrender.com/goals/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ completed: !current }),
@@ -43,27 +43,18 @@ function App() {
   };
 
   const deleteGoal = (id) => {
-    fetch(`https://skilltrack-backend.onrender.com/goals/${id}`, {
+    fetch(`https://skilltrack-backend-u9kg.onrender.com/goals/${id}`, {
       method: "DELETE",
     })
       .then(() => fetchGoals())
       .catch((err) => console.error(err));
   };
-<img
-  src={headerImage}
-  alt="SkillTrack"
-  style={{
-    width: "100%",
-    maxWidth: "300px",
-    display: "block",
-    margin: "0 auto 20px",
-  }}
-/>
+
 
 return (
 <>
 <div className="app-header">
-    <img src="/header.png" alt="Header" />
+    <img src={headerImage} alt="SkillTrack" style={{ width: "100%", maxWidth: "300px", display: "block", margin: "0 auto 20px" }} />
   </div>
   
   <div className="container">

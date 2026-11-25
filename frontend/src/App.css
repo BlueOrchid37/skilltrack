@@ -1,126 +1,293 @@
+
+/* ==============================
+   Global Theme
+================================ */
+
+:root {
+  --primary: #3498db;
+  --primary-dark: #287fbd;
+  --text-dark: #2c3e50;
+  --text-muted: #7f8c8d;
+  --border: #e4edf3;
+  --surface: #ffffff;
+  --radius: 14px;
+  --shadow: 0 12px 35px rgba(44, 94, 130, 0.10);
+  --transition: 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(to bottom, #b3e5fc, #f1f9ff);
   font-family: Arial, sans-serif;
+  color: var(--text-dark);
+  background:
+    radial-gradient(circle at top left, #d5f1ff 0%, transparent 45%),
+    linear-gradient(135deg, #b3e5fc, #f1f9ff 65%, #e5f4ff);
+  background-attachment: fixed;
 }
 
+/* ==============================
+   Header
+================================ */
+
+.app-header {
+  width: 100%;
+  padding: 24px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #87ceeb, #e0f6ff);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 15px rgba(50, 120, 160, 0.06);
+}
+
+.app-header img {
+  display: block;
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* ==============================
+   Main Container
+================================ */
 
 .container {
+  width: calc(100% - 32px);
   max-width: 500px;
-  margin: 40px auto;
-  background: #ffffffee; /* slightly translucent white */
-  padding: 22px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(6px);
+  margin: 45px auto;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: box-shadow var(--transition);
 }
 
+.container:hover {
+  box-shadow: 0 16px 40px rgba(44, 94, 130, 0.13);
+}
 
+/* ==============================
+   Heading
+================================ */
 
 h1 {
+  margin: 0 0 24px;
+  color: var(--text-dark);
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.3;
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 16px;
+  letter-spacing: -0.6px;
 }
 
+/* ==============================
+   Input Section
+================================ */
 
 .input-row {
   display: flex;
+  align-items: stretch;
   gap: 10px;
 }
 
 input {
-  padding: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  font-family: inherit;
   font-size: 15px;
-  border-radius: 6px;
-  border: 1px solid #cfd8dc;
+  color: var(--text-dark);
+  background: #f8fcff;
+  border: 1px solid #d5e3ed;
+  border-radius: 8px;
   outline: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+input::placeholder {
+  color: #9aabb8;
 }
 
 input:focus {
-  border-color: #5dade2;
+  background: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.13);
 }
 
+/* ==============================
+   Buttons
+================================ */
+
 button {
-  padding: 10px 14px;
+  padding: 12px 18px;
+  font-family: inherit;
   font-size: 15px;
-  border-radius: 6px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #5dade2, #3498db);
   border: none;
-  background-color: #5dade2;
-  color: white;
+  border-radius: 8px;
   cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.18);
+  transition:
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
 button:hover {
-  background-color: #4a90d9;
+  background: linear-gradient(135deg, #3498db, #287fbd);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(52, 152, 219, 0.25);
 }
 
+button:active {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(52, 152, 219, 0.3);
+  outline-offset: 3px;
+}
+
+/* ==============================
+   Goal List
+================================ */
 
 ul {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin: 24px 0 0;
 }
 
 li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 6px;
-  border-bottom: 1px solid #eef2f5;
+  gap: 12px;
+  padding: 14px 12px;
+  margin-bottom: 9px;
+  background: #f8fbfd;
+  border: 1px solid #edf3f7;
+  border-radius: 9px;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
 }
 
+li:hover {
+  background: #f0f8fd;
+  border-color: #d9ebf7;
+  transform: translateX(3px);
+}
+
+/* ==============================
+   Goal States
+================================ */
+
 .goal {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-dark);
   cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: color var(--transition);
 }
 
 .completed {
+  color: var(--text-muted);
   text-decoration: line-through;
-  color: #7f8c8d;
+  opacity: 0.75;
 }
+
+/* ==============================
+   Paragraph / Empty State
+================================ */
 
 p {
-  text-align: center;
-  color: #34495e;
+  margin: 18px 0 0;
+  color: #607586;
   font-size: 14px;
-  margin-top: 10px;
-}
-
-
-@media (max-width: 600px) {
-  .container {
-    margin: 20px;
-    padding: 15px;
-  }
-
-  input {
-    font-size: 14px;
-  }
-
-  button {
-    font-size: 14px;
-  }
-}
-.app-header {
-  width: 100%;
-  background: linear-gradient(to bottom, #87ceeb, #e0f6ff);
-  padding: 20px 0;
+  line-height: 1.6;
   text-align: center;
-  border-bottom: 1px solid #cce7f2;
 }
 
+/* ==============================
+   Responsive Design
+================================ */
 
-.app-header img {
-  max-width: 200px;
-  height: auto;
-}
 @media (max-width: 600px) {
   .app-header {
-    padding: 15px 0;
+    padding: 18px 15px;
   }
 
   .app-header img {
     max-width: 160px;
+  }
+
+  .container {
+    width: calc(100% - 32px);
+    margin: 25px auto;
+    padding: 21px 17px;
+    border-radius: 12px;
+  }
+
+  h1 {
+    font-size: 23px;
+    margin-bottom: 20px;
+  }
+
+  input,
+  button {
+    font-size: 14px;
+  }
+
+  button {
+    padding: 11px 14px;
+  }
+
+  li {
+    padding: 12px 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .input-row {
+    gap: 7px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  button {
+    padding: 10px 12px;
+  }
+}
+
+/* ==============================
+   Accessibility
+================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

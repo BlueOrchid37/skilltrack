@@ -1,24 +1,15 @@
 
 import os
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect
 
 
-# Project paths
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-FRONTEND_BUILD = os.path.abspath(
-    os.path.join(BASE_DIR, "../frontend/build")
-)
-
-
-# Flask configuration
 app = Flask(__name__)
 
 CORS(app)
-
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///skilltrack.db"
@@ -33,22 +24,52 @@ class Goal(db.Model):
     title = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False)
 
+    # Nullable so existing goals can remain unassigned
+    device_id = db.Column(db.String(64), nullable=True)
 
-# Serve React frontend
-@app.route("/")
-def home():
-    return "SkillTrack backend with database is running!"
+
+# Get device ID from each frontend request
+def get_device_id():
+    return request.headers.get("X-Device-ID")
+
+
+# Database initialization and safe migration
+def initialize_database():
+    with app.app_context():
+        db.create_all()
+
+        columns = [
+            column["name"]
+            for column in inspect(db.engine).get_columns("goal")
+        ]
+
+        if "device_id" not in columns:
+            db.session.execute(
+                db.text(
+                    "ALTER TABLE goal ADD COLUMN device_id VARCHAR(64)"
+                )
+            )
+            db.session.commit()
 
 
 # Add a new goal
 @app.route("/api/goals", methods=["POST"])
 def add_goal():
+    device_id = get_device_id()
+
+    if not device_id:
+        return jsonify({"error": "Device ID is required"}), 400
+
     data = request.get_json()
 
-    if not data or not data.get("title"):
+    if not data or not data.get("title", "").strip():
         return jsonify({"error": "Title is required"}), 400
 
-    new_goal = Goal(title=data["title"])
+    new_goal = Goal(
+        title=data["title"].strip(),
+        completed=False,
+        device_id=device_id
+    )
 
     db.session.add(new_goal)
     db.session.commit()
@@ -63,27 +84,40 @@ def add_goal():
     }), 201
 
 
-# Get all goals
+# Get goals belonging only to this device
 @app.route("/api/goals", methods=["GET"])
 def get_goals():
-    goals = Goal.query.all()
+    device_id = get_device_id()
+
+    if not device_id:
+        return jsonify({"error": "Device ID is required"}), 400
+
+    goals = Goal.query.filter_by(device_id=device_id).all()
 
     result = []
 
-    for g in goals:
+    for goal in goals:
         result.append({
-            "id": g.id,
-            "title": g.title,
-            "completed": g.completed
+            "id": goal.id,
+            "title": goal.title,
+            "completed": goal.completed
         })
 
     return jsonify(result)
 
 
-# Update a goal
+# Update a goal belonging to this device
 @app.route("/api/goals/<int:goal_id>", methods=["PUT"])
 def update_goal(goal_id):
-    goal = Goal.query.get(goal_id)
+    device_id = get_device_id()
+
+    if not device_id:
+        return jsonify({"error": "Device ID is required"}), 400
+
+    goal = Goal.query.filter_by(
+        id=goal_id,
+        device_id=device_id
+    ).first()
 
     if not goal:
         return jsonify({"error": "Goal not found"}), 404
@@ -104,10 +138,18 @@ def update_goal(goal_id):
     })
 
 
-# Delete a goal
+# Delete a goal belonging to this device
 @app.route("/api/goals/<int:goal_id>", methods=["DELETE"])
 def delete_goal(goal_id):
-    goal = Goal.query.get(goal_id)
+    device_id = get_device_id()
+
+    if not device_id:
+        return jsonify({"error": "Device ID is required"}), 400
+
+    goal = Goal.query.filter_by(
+        id=goal_id,
+        device_id=device_id
+    ).first()
 
     if not goal:
         return jsonify({"error": "Goal not found"}), 404
@@ -118,22 +160,8 @@ def delete_goal(goal_id):
     return jsonify({"message": "Goal deleted"})
 
 
-# Serve React static files and handle React routes
-@app.route("/<path:path>")
-def serve_react_files(path):
-    file_path = os.path.join(FRONTEND_BUILD, path)
-
-    if os.path.isfile(file_path):
-        return send_from_directory(FRONTEND_BUILD, path)
-
-    return send_from_directory(FRONTEND_BUILD, "index.html")
-
-
-# Start Flask server
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+    initialize_database()
 
     port = int(os.environ.get("PORT", 5000))
-
     app.run(host="0.0.0.0", port=port)

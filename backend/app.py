@@ -15,11 +15,7 @@ FRONTEND_BUILD = os.path.abspath(
 
 
 # Flask configuration
-app = Flask(
-    __name__,
-    static_folder=FRONTEND_BUILD,
-    static_url_path=""
-)
+app = Flask(__name__)
 
 CORS(app)
 
@@ -41,7 +37,7 @@ class Goal(db.Model):
 # Serve React frontend
 @app.route("/")
 def home():
-    return send_from_directory(FRONTEND_BUILD, "index.html")
+    return "SkillTrack backend with database is running!"
 
 
 # Add a new goal

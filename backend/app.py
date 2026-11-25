@@ -1,8 +1,14 @@
+
+import os
 from flask_cors import CORS
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="frontend/build",
+    static_url_path=""
+)
 
 CORS(app)
 
@@ -12,16 +18,20 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# Database model (table)
+
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False)
 
+
+# Serve React frontend
 @app.route("/")
 def home():
-    return "SkillTrack backend with database is running!"
+    return send_from_directory("frontend/build", "index.html")
 
+
+# API routes
 @app.route("/api/goals", methods=["POST"])
 def add_goal():
     data = request.get_json()
@@ -30,7 +40,6 @@ def add_goal():
         return jsonify({"error": "Title is required"}), 400
 
     new_goal = Goal(title=data["title"])
-
     db.session.add(new_goal)
     db.session.commit()
 
@@ -43,19 +52,20 @@ def add_goal():
         }
     }), 201
 
+
 @app.route("/api/goals", methods=["GET"])
 def get_goals():
     goals = Goal.query.all()
 
-    result = []
-    for g in goals:
-        result.append({
+    return jsonify([
+        {
             "id": g.id,
             "title": g.title,
             "completed": g.completed
-        })
+        }
+        for g in goals
+    ])
 
-    return jsonify(result)
 
 @app.route("/api/goals/<int:goal_id>", methods=["PUT"])
 def update_goal(goal_id):
@@ -65,9 +75,7 @@ def update_goal(goal_id):
         return jsonify({"error": "Goal not found"}), 404
 
     data = request.get_json()
-
     goal.completed = data.get("completed", goal.completed)
-
     db.session.commit()
 
     return jsonify({
@@ -78,6 +86,7 @@ def update_goal(goal_id):
             "completed": goal.completed
         }
     })
+
 
 @app.route("/api/goals/<int:goal_id>", methods=["DELETE"])
 def delete_goal(goal_id):
@@ -92,7 +101,16 @@ def delete_goal(goal_id):
     return jsonify({"message": "Goal deleted"})
 
 
-import os
+# Serve React static files
+@app.route("/<path:path>")
+def serve_react_files(path):
+    file_path = os.path.join("frontend/build", path)
+
+    if os.path.isfile(file_path):
+        return send_from_directory("frontend/build", path)
+
+    return send_from_directory("frontend/build", "index.html")
+
 
 if __name__ == "__main__":
     with app.app_context():
